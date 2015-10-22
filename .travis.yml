@@ -12,9 +12,10 @@ before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - gcc --version
   - git clone https://github.com/biicode/misc.git
-  - cd misc
+  - pushd misc
   - sudo ./travis/cpp/gcc_update.sh --version 4.9
   - gcc --version
+  - popd
 
 script:
   - mkdir build && cd build && cmake .. && make
