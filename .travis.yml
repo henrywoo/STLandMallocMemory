@@ -4,18 +4,13 @@ compiler:
   - gcc
 
 before_install:
-  #- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  #- sudo apt-get -qq update
-  #- sudo apt-get -qq install g++-4.8
-  #- echo $LANG
-  #- echo $LC_ALL
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - gcc --version
   - git clone https://github.com/biicode/misc.git
   - pushd misc
   - sudo ./travis/cpp/gcc_update.sh --version 4.9
   - gcc --version
   - popd
+  - rm -fr misc
 
 script:
   - mkdir build && cd build && cmake .. && make
