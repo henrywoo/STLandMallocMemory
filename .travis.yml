@@ -13,7 +13,7 @@ before_install:
   - gcc --version
   - git clone https://github.com/biicode/misc.git
   - cd misc
-  - ./travis/cpp/gcc_update.sh --version 4.9
+  - sudo ./travis/cpp/gcc_update.sh --version 4.9
   - gcc --version
 
 script:
