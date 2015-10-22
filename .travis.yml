@@ -11,6 +11,10 @@ before_install:
   #- echo $LC_ALL
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - gcc --version
+  - git https://github.com/biicode/misc.git
+  - cd misc
+  - ./travis/cpp/gcc_update.sh --version 4.9
+  - gcc --version
 
 script:
   - mkdir build && cd build && cmake .. && make
