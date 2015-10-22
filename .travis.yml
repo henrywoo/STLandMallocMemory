@@ -1,0 +1,20 @@
+language: cpp
+
+compiler:
+  - gcc
+
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+
+before_script:
+  - travis_retry bundle
+
+script:
+  - mkdir build && cd build && cmake -DCOVERALLS=ON -DCMAKE_BUILD_TYPE=Debug .. && cmake --build . && cmake --build . --target coveralls
+
+branches:
+  only:
+    - master
+os:
+  - linux
