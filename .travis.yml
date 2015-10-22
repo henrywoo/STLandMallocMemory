@@ -9,6 +9,7 @@ before_install:
   - sudo apt-get -qq install g++-4.8
   - echo $LANG
   - echo $LC_ALL
+  - gcc --version
 
 script:
   - mkdir build && cd build && cmake .. && make
