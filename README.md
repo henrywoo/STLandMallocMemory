@@ -4,14 +4,20 @@ STL Memory Pool and Malloc Subsystem Analysis
 
 - by Henry Wu, 2018
 
+There are various STLs: HP(Visual C++), SGI(GCC), RW(C++Builder)... And some companies have their own variants, like [BDE](https://github.com/bloomberg/bde), [EASTL](https://github.com/electronicarts/). This article is only about GCC's STL, aka SGI STL.
+
+Also STL use underlying memory system to allocate/deallocate memory. In different operating systems, the behaviors could be different. In Linux, it use glibc's malloc/free subsystem. Although there are many difference, I believe the test methods and results would share many common features if you apply it to other STLs in other OS. Anyway, this artilcle is onyl about Linux, specifically Ubuntu 17.10.
+
 
 ## Theory
 
-GCC STL memory management has two stages.
+The development of STL memory management is divided into two phases.
  
-Before g++3.4, STL uses two strategies to allocate memory, although HP(Visual C++), SGI(GCC), RW(C++Builder) STLs have different implementations. To avoid defragmentation and speed up memory allocation, STL matains a memory pool with free memory blocks connnected by a free list. The source code is at [bits/stl_alloc.h](https://github.com/henrywoo/STLandMallocMemory/blob/master/g%2B%2B/3.3/bits/stl_alloc.h#L332). This two-strategies way increases the complexity of implementation, but reduced memeory defragmentation.
+Before g++3.4, STL has two strategies to allocate memory. To avoid defragmentation and speed up memory allocation, STL matains a memory pool with free memory blocks connnected by a free list. The source code is at [bits/stl_alloc.h](https://github.com/henrywoo/STLandMallocMemory/blob/master/g%2B%2B/3.3/bits/stl_alloc.h#L332).
  
-Starting from g++ 3.4, GCC STL by default uses operator new/delete, which finally call glibc's malloc/free [here](https://github.molgen.mpg.de/git-mirror/glibc/blob/master/malloc/malloc.c#L22), for memeory allocation. As malloc system also uses pool technique. We can still observe the pooling effect. The previous STL pool code was moved to [pool_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L84).
+Starting from g++ 3.4, STL by default uses operator new/delete, which finally call glibc's malloc/free [here](https://github.molgen.mpg.de/git-mirror/glibc/blob/master/malloc/malloc.c#L22). As malloc system also uses pool technique. We can still observe the pooling effect. The previous STL allocator code was partially moved to [pool_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L84).
+
+### STL Pool allocator
 
 The freelist properties are defined as below. We can see its size is 16, and max bytes is 128.
 ```cpp
@@ -26,7 +32,6 @@ The freelist properties are defined as below. We can see its size is 16, and max
 ```
 
 [Here](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L243) is the logic: if `GLIBCXX_FORCE_NEW` is defined or object size is greater than 128 Bytes, just use new/delete(or malloc/free) sub-system; otherwise, try to get an object from the freelist in memory pool. If the object is from memory pool, after deallocation, it is released back to the pool. [Here]((https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L279)) is the logic of `deallocation`.
-
 
 The following is my test results generated from code [stl_mem.cpp](src/stl_mem.cpp) and [malloc_mem.cpp](src/malloc_mem.cpp), where I track memory usage of in-scope and out-of-scope RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. RSS is often used by many monitoring tools in companies to track program's memory usage. Althought it contains memory by shared library, in my test case, it is neglectable(only 3MB), so it is a reliable metric for the test.
 
@@ -106,7 +111,7 @@ The purple-dot line displays, when pool allocator is used, RSS values after all 
 
 Another observation is malloc/free's pool effect. malloc/free actually doesn't return back all memory to OS even after all objects are freed. Before string size is greater than some threshold value of 500+, malloc/free will hold around 30~40MB memory, and after that, the value jumps to almost 600MB. You can see the jump of the black dot line in the graph. This is not surprising either.
 
-What surprised me is the default STL out-of-scope RSS without pool allocator almost overlaps with the one with pool allocator! We can see the red and purple dot lines are very very close. I am using g++ 7.3 and it should the underlying malloc/free subsystem. But the behavior is still like the old g++3.3. One speculation is malloc/free use very similar pool stragey with STL pool allocator. I need some time to verify it. Or please email me wufuheng AT gmail.com or send a Pull Request if you know the answer. Thanks!
+**What surprised me is the default STL out-of-scope RSS without pool allocator almost overlaps with the one with pool allocator!** We can see the red and purple dot lines are very very close. I am using g++ 7.3 so it should the underlying malloc/free subsystem. But the behavior is still like the old g++3.3. One speculation is malloc/free use very similar pool stragey with STL pool allocator. I need some time to verify it. Or please email me wufuheng AT gmail.com or send a Pull Request if you know the answer. Thanks!
 
 ### List
 
