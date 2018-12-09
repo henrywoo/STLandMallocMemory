@@ -4,6 +4,8 @@ STL Memory Pool and Malloc Subsystem Analysis
 
 - by Henry Wu, 2018
 
+![](http://beej.us/blog/data/object-pool/images/goatpool.png)
+
 ## Preface
 
 There are various STLs: HP(Visual C++), SGI(GCC), RW(C++Builder)... And some companies have their own variants, like [BDE](https://github.com/bloomberg/bde), [EASTL](https://github.com/electronicarts/). This article is only about GCC's STL, aka SGI STL.
