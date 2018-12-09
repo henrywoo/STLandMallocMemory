@@ -13,7 +13,7 @@
 
 using namespace std;
 //#define ALL_ZERO_STRING
-#define STL_CONTAINER vector
+#define STL_CONTAINER list
 
 int sz[1024]={}, idx_sz=0;
 int rss0[1024]={}, idx_rss0=0;

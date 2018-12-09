@@ -1,5 +1,7 @@
 # STL Memory Pool and Malloc Subsystem Analysis
 
+- by Henry Wu
+
 Generally speaking, STL uses two strategies to allocate memory, although HP(Visual C++), SGI(GCC), RW(C++Builder) STLs have different implementations.
 
 To avoid defragmentation and speed up memory allocation, STL matains a memory pool with free memory blocks connnected by a free list. The source code are at [pool_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L84).
@@ -37,6 +39,20 @@ For list, the memory usage keeps increasing.
 
 ![](deque.png)
 
-Deque is actually an unrolled linked list plus a map(not STL map). So it is between vector and list.
+Deque is actually an unrolled linked list plus a map(not STL map). So it is between vector and list. We can see from the graphs above, compared with vector, deque has around 30M overhead in RSS.
+
+## Other versions of compilers and OSes
+
+I tested with different compilers: GCC 4.8, 5, 6 and 7, Clang++ 6.0 and different operating systemes: IBM AIX 7.1, Sun Solaris 10, the memory behaviors are very different.
+
+Also STL, or its underlying malloc system, tries to reuse same object as possible as it can. I tested strings with all '0' and random strings. The all-zero strings make program hold more memory in the pool.
+
+[](gcc4.8_random_string.png)
+
+
+## Conclusion
+
+Both STL and malloc subsystem use pool technique to optimize memory allocation. Once 
+
 
  Also there is an extension to standard library for multithread environment in GCC: [mt_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/mt_allocator.h#L63)
