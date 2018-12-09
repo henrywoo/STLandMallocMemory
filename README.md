@@ -47,7 +47,7 @@ I tested with different compilers: GCC 4.8, 5, 6 and 7, Clang++ 6.0 and differen
 
 Also STL, or its underlying malloc system, tries to reuse same object as possible as it can. I tested strings with all '0' and random strings. The all-zero strings make program hold more memory in the pool.
 
-[](gcc4.8_random_string.png)
+![](gcc4.8_random_string.png)
 
 
 ## Conclusion
