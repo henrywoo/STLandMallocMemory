@@ -1,7 +1,7 @@
 //
 // g++-7 stl_mem.cpp -O3 -o mememe -std=c++11 && ./mememe
 //
-#include <unistd.h>
+#include <unistd.h> // _SC_PAGE_SIZE
 #include <cstdio>
 #include <vector>
 #include <list>
@@ -10,10 +10,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <ext/pool_allocator.h>
 
 using namespace std;
+
+typedef __gnu_cxx::__pool_alloc<string> POOL;
+#define STL_CONTAINER deque<string, POOL> // You can replace it with `list`, `vector`
 //#define ALL_ZERO_STRING
-#define STL_CONTAINER list
 
 int sz[1024]={}, idx_sz=0;
 int rss0[1024]={}, idx_rss0=0;
@@ -41,7 +44,7 @@ void process_mem_usage(double& vm_usage, double& resident_set) {
 
 void test_stl_mem(int k){
   srand(time(NULL));
-  STL_CONTAINER<string> strvec;
+  STL_CONTAINER strvec;
   static const int LOOPSIZE = 1000000; // 1million
   for(long long i = 0; i < LOOPSIZE; ++i){
     string out(k,'0');
