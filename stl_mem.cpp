@@ -1,3 +1,6 @@
+//
+// g++-7 stl_mem.cpp -O3 -o mememe -std=c++11 && ./mememe
+//
 #include <unistd.h>
 #include <cstdio>
 #include <vector>
