@@ -43,7 +43,7 @@ Deque is actually an unrolled linked list plus a map(not STL map). So it is betw
 
 ## Other versions of compilers and OSes
 
-I tested with different compilers: GCC 4.8, 5, 6 and 7, Clang++ 6.0 and different operating systemes: IBM AIX 7.1, Sun Solaris 10, the memory behaviors are very different.
+I tested with different compilers: `GCC 4.8`, `GCC 5`, `GCC 6` and `GCC 7`, `Clang++ 6.0` and different operating systemes: `IBM AIX 7.1`, `Sun Solaris 10`, the memory behaviors are very different.
 
 Also STL, or its underlying malloc system, tries to reuse same object as possible as it can. I tested strings with all '0' and random strings. The all-zero strings make program hold more memory in the pool.
 
@@ -52,7 +52,11 @@ Also STL, or its underlying malloc system, tries to reuse same object as possibl
 
 ## Conclusion
 
-Both STL and malloc subsystem use pool technique to optimize memory allocation. Once 
+Both STL and malloc subsystem use pool technique to optimize memory allocation/deallocation. Sometimes it just won't return memory back to operating system, but this is `NOT` memory leak, because all the memory are reusable for this process.
+
+Although it is not memory leak, it could cause some issue in production environment. Because the program has no control how much the memory is retained in the pool in that process, it could hold the system memory and starve other processes. Since the memory is not returned to OS, it is not reusable for other processes system-wide. In that case, we need to `improve our algorithm` or `increase system memory`.
+
+Especially for data intensive application, test it well to avoid get on-called at night due to OOM issue.
 
 
- Also there is an extension to standard library for multithread environment in GCC: [mt_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/mt_allocator.h#L63)
+- Also there is an extension to standard library for multithread environment in GCC: [mt_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/mt_allocator.h#L63)
