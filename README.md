@@ -17,7 +17,7 @@ Before g++3.4, STL has two strategies to allocate memory. To avoid defragmentati
  
 Starting from g++ 3.4, STL by default uses operator new/delete, which finally call glibc's malloc/free [here](https://github.molgen.mpg.de/git-mirror/glibc/blob/master/malloc/malloc.c#L22). As malloc system also uses pool technique. We can still observe the pooling effect. The previous STL allocator code was partially moved to [pool_allocator.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L84).
 
-### STL Pool allocator
+### STL Memory Pool
 
 The freelist properties are defined as below. We can see its size is 16, and max bytes is 128.
 ```cpp
@@ -33,7 +33,7 @@ The freelist properties are defined as below. We can see its size is 16, and max
 
 [Here](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L243) is the logic: if `GLIBCXX_FORCE_NEW` is defined or object size is greater than 128 Bytes, just use new/delete(or malloc/free) sub-system; otherwise, try to get an object from the freelist in memory pool. If the object is from memory pool, after deallocation, it is released back to the pool. [Here]((https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/ext/pool_allocator.h#L279)) is the logic of `deallocation`.
 
-The following is my test results generated from code [stl_mem.cpp](src/stl_mem.cpp) and [malloc_mem.cpp](src/malloc_mem.cpp), where I track memory usage of in-scope and out-of-scope RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. RSS is often used by many monitoring tools in companies to track program's memory usage. Althought it contains memory by shared library, in my test case, it is neglectable(only 3MB), so it is a reliable metric for the test.
+The following is my test results generated from code [stl_mem.cpp](src/stl_mem.cpp) and [malloc_mem.cpp](src/malloc_mem.cpp), where I track memory usage of in-scope and out-of-scope RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. RSS is often used by many monitoring tools in companies to track program's memory usage. Although it contains memory by shared library, in my test case, that part is neglectable(only 3MB), so it is a reliable metric for the test.
 
 ## Test Plan
 
