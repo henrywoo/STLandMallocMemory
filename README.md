@@ -117,7 +117,7 @@ The purple-dot line displays, when pool allocator is used, RSS values after all 
 
 Another observation is malloc/free's pool effect. malloc/free actually doesn't return back all memory to OS even after all objects are freed. Before string size is greater than some threshold value of 500+, malloc/free will hold around 30~40MB memory, and after that, the value jumps to almost 600MB. You can see the jump of the black dot line in the graph. This is not surprising either.
 
-**What surprised me is the default STL out-of-scope RSS without pool allocator almost overlaps with the one with pool allocator!** We can see the red and purple dot lines are very very close. I am using g++ 7.3 so it should the underlying malloc/free subsystem. But the behavior is still like the old g++3.3. One speculation is malloc/free use very similar pool stragey with STL pool allocator. I need some time to verify it. Or please email me wufuheng AT gmail.com or send a [Pull Request](https://github.com/henrywoo/STLandMallocMemory/pulls) if you know the answer. Thank you in advance!
+**What surprised me is the default STL out-of-scope RSS without pool allocator almost overlaps with the one with pool allocator!** We can see the red and purple dot lines are very very close. I am using g++ 7.3 so it should the underlying malloc/free subsystem. But the behavior is still like the old g++3.3. One speculation is malloc/free use very similar pool stragey with STL pool allocator. I need some time to verify it. Or please email me at wufuheng(AT)gmail.com or send a [Pull Request](https://github.com/henrywoo/STLandMallocMemory/pulls) if you know the answer. Thank you in advance!
 
 ### List
 
