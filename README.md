@@ -13,7 +13,7 @@ Also STL use underlying memory system to allocate/deallocate memory. In differen
 
 ## Story
 
-From time to time, I got on-called in midnight due to some OOM(Out-of-memory) issue, which was not caused by memory leak. The system seems able to handle the data but program just kill by OS. For instance, you have two programs running as backend services to process a 1GB file. Assuming the system has 2GB free memory left, and your program is bug free and we assume there is no memory overhead. When the data are processed in the pipeline, the second program died of OOM, bacause the first program hogs much memory in its pool. I encountered this several times. After some digging, I found STL/glibc has memory pool which, in some cases, never returns memory to operating system. That is why I am writing this article. 
+From time to time, I got on-called in midnight due to some OOM(Out-of-memory) issue, which was not caused by memory leak. Initially the system seems able to handle the data but the program just get killed by OS. For instance, you have two programs running as backend services to process a 1GB file. Assuming the system has 2GB free memory left, and your program is bug free and we assume there is no memory overhead. When the data are processed in the pipeline, the second program died of OOM, bacause the first program hogs much memory in its pool. I encountered this several times. After some digging, I found STL/glibc has memory pool which, in some cases, never returns memory to operating system. That is why I am writing this article. 
 
 ## Theory
 
