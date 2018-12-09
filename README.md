@@ -8,7 +8,7 @@ STL Memory Pool and Malloc Subsystem Analysis
 
 There are various STLs: HP(Visual C++), SGI(GCC), RW(C++Builder)... And some companies have their own variants, like [BDE](https://github.com/bloomberg/bde), [EASTL](https://github.com/electronicarts/). This article is only about GCC's STL, aka SGI STL.
 
-Also STL may use underlying memory system to allocate/deallocate memory. In different operating systems, the behaviors could be different. In Linux, it use glibc's malloc subsystem(specifically [ptmalloc2](https://github.molgen.mpg.de/git-mirror/glibc/blob/master/malloc/malloc.c#L22). Although there are many difference, I believe the test methods and results would share many common features if you apply it to other STLs in other OS. Anyway, this artilcle is only about Linux, more specifically Ubuntu 17.10.
+Also STL may use underlying memory system to allocate/deallocate memory. In different operating systems, the behaviors could be different. In Linux, it use glibc's malloc subsystem(specifically [ptmalloc2](https://github.molgen.mpg.de/git-mirror/glibc/blob/master/malloc/malloc.c#L22)). Although there are many difference, I believe the test methods and results would share many common features if you apply it to other STLs in other OS. Anyway, this artilcle is only about Linux, more specifically Ubuntu 17.10.
 
 
 ## Story
