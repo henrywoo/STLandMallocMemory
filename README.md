@@ -24,24 +24,24 @@ The freelist properties are defined as below. We can see its size is 16, and max
 After g++ 3.4, GCC STL uses new/delete.
 
  
-The following is my test results generated from code [stl_mem.cpp](stl_mem.cpp) and [malloc_mem.cpp](malloc_mem.cpp), where I track memory usage of VM/VSS(Virtual Set Size) and RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. These two metrics are often used by many monitoring tools in companies to track program's memory usage.
+The following is my test results generated from code [stl_mem.cpp](src/stl_mem.cpp) and [malloc_mem.cpp](src/malloc_mem.cpp), where I track memory usage of VM/VSS(Virtual Set Size) and RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. These two metrics are often used by many monitoring tools in companies to track program's memory usage.
 
 
 ## vector
 
-![](vector.png)
+![](img/vector.png)
 
 The x axis is the size of string, y axis is the RSS memory. The red-dot line is RSS after all STL objects are released. From the red-dot line, we can see when object size is less than or equal to 128 bytes, the memory usage keeps increasing even after object goes out of scope.
 
 ## List
 
-![](list.png)
+![](img/list.png)
 
 For list, the memory usage keeps increasing.
 
 ## deque
 
-![](deque.png)
+![](img/deque.png)
 
 Deque is actually an unrolled linked list plus a map(not STL map). So it is between vector and list. We can see from the graphs above, compared with vector, deque has around 30M overhead in RSS.
 
@@ -51,7 +51,7 @@ I tested with different compilers: `GCC 4.8`, `GCC 5`, `GCC 6` and `GCC 7`, `Cla
 
 Also STL, or its underlying malloc system, tries to reuse same objects as possible as it can. I tested strings with all '0' and random strings. The all-zero strings make program hold more memory in the pool.
 
-![](gcc4.8_random_string.png)
+![](img/gcc4.8_random_string.png)
 
 
 ## Conclusion
