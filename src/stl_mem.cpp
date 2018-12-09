@@ -15,7 +15,7 @@
 using namespace std;
 
 typedef __gnu_cxx::__pool_alloc<string> POOL;
-#define STL_CONTAINER deque<string, POOL> // You can replace it with `list`, `vector`
+#define STL_CONTAINER deque<string, POOL> // You can replace it with `list`, `vector` with or without the POOL allocator
 //#define ALL_ZERO_STRING
 
 int sz[1024]={}, idx_sz=0;

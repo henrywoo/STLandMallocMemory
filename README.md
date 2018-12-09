@@ -28,13 +28,83 @@ The freelist properties are defined as below. We can see its size is 16, and max
 
 The following is my test results generated from code [stl_mem.cpp](src/stl_mem.cpp) and [malloc_mem.cpp](src/malloc_mem.cpp), where I track memory usage of in-scope and out-of-scope RSS(Resident Set Size) `after STL container is deallocated(or goes out of scope)` or `after memory is reclaimed by free in malloc/free subsystem`. RSS is often used by many monitoring tools in companies to track program's memory usage. Althought it contains memory by shared library, in my test case, it is neglectable(only 3MB), so it is a reliable metric for the test.
 
+## Test Plan
+
+Setup:
+
+- machine: Ubuntu 17.10
+- g++: 7.3
+- C++ standard: 11
+
+Code:
+
+```
+void test_stl_mem(int k){
+  srand(time(NULL));
+  STL_CONTAINER strvec;
+  static const int LOOPSIZE = 1000000;
+  for(long long i = 0; i < LOOPSIZE; ++i){
+    string out(k,'0');
+#ifndef ALL_ZERO_STRING
+    out[rand()%k] = rand()%26+'0';
+#endif
+    strvec.push_back(out);
+  }
+  double vm, rss;
+  process_mem_usage(vm, rss);
+  sz[idx_sz++]=k, rss0[idx_rss0++]=rss;
+}
+```
+What the function `test_stl_mem` above does is:
+
+1. create an empty STL container
+2. create a randomized(optional) string with size equal to k, which is passed from main function below
+3. push back the string to the STL container
+4. repeat step 2 and 3 for 1 million times
+5. record memory(RSS) usage, which is called `in-scope RSS` in this test
+
+ 
+STL_CONTAINER is a macro defined as follows:
+
+```
+typedef __gnu_cxx::__pool_alloc<string> POOL;
+#define STL_CONTAINER vector<string, POOL>
+```
+
+I replace it with `list`, `deque` with and without the POOL allocator to get more test data.
+
+In main function, we just call `test_stl_mem` with k from 8 to 800, and record RSS memory usage after the call, which is called `out-of-scope RSS` in this test.
+
+```
+int main(int argc, char** argv){
+  for (int k=8; k<=800;k+=8){
+    test_stl_mem(k);
+    double vm1, rss;
+    process_mem_usage(vm1, rss);
+    rss1[idx_rss1++] = rss;
+  }
+  ...
+  return 0;
+}
+```
+
+I did the similar tests for malloc/free, the code is here at [malloc_mem.cpp](src/malloc_mem.cpp).
+
 ## Test Results
+
+I output the in-scope and out-of-scope RSS and use `R` to draw graphs. The x axis is the size of string, y axis is the RSS memory.
 
 ### vector
 
 ![](img/vector.png)
 
-The x axis is the size of string, y axis is the RSS memory. The red-dot line is RSS after all STL objects are released. From the red-dot line, we can see when object size is less than or equal to 128 bytes, the memory usage keeps increasing even after object goes out of scope.
+STL in-scope RSS keeps increasing as size of string increases, which is not surprising. 
+
+The purple-dot line displays, when pool allocator is used, RSS values after all STL objects are `deallocated`. Observing the purple-dot line, we can see `when object size is less than or equal to 128 bytes`, the memory usage keeps increasing even after object goes out of scope. This is also expected.
+
+Another observation is malloc/free's pool effect. malloc/free actually doesn't return back all memory to OS even after all objects are freed. Before string size is greater than some threshold value of 500+, malloc/free will hold around 30~40MB memory, and after that, the value jumps to almost 600MB. You can see the jump of the balck dot line in the graph. This is also not surpring either.
+
+What surprised me is the default STL out-of-scope RSS without pool allocator almost overlaps with the one with pool allocator! We can see the red and purple dot lines are very very close. I am using g++ 7.3 and it should the underlying malloc/free subsystem. But the behavior is still like the old g++3.3. One speculation is malloc/free use very similar pool stragey with STL pool allocator. I need some time to verify it. Or please email me wufuheng AT gmail.com or send a Pull Request if you know the answer. Thanks!
 
 ### List
 
