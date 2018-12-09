@@ -4,7 +4,7 @@ STL Memory Pool and Malloc Subsystem Analysis
 
 - by Henry Wu, 2018
 
-![](http://beej.us/blog/data/object-pool/images/goatpool.png)
+![](img/goatpool.png)
 
 ## Preface
 
