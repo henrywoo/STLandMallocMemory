@@ -4,10 +4,16 @@ STL Memory Pool and Malloc Subsystem Analysis
 
 - by Henry Wu, 2018
 
+## Preface
+
 There are various STLs: HP(Visual C++), SGI(GCC), RW(C++Builder)... And some companies have their own variants, like [BDE](https://github.com/bloomberg/bde), [EASTL](https://github.com/electronicarts/). This article is only about GCC's STL, aka SGI STL.
 
 Also STL use underlying memory system to allocate/deallocate memory. In different operating systems, the behaviors could be different. In Linux, it use glibc's malloc/free subsystem. Although there are many difference, I believe the test methods and results would share many common features if you apply it to other STLs in other OS. Anyway, this artilcle is onyl about Linux, specifically Ubuntu 17.10.
 
+
+## Story
+
+I sometimes got on-called in midnight due to some OOM(Out-of-memory) issue, which was not caused by memory leak. The system seems able to handle the data but program just kill by OS. For instance, you have two programs running as backend services to process a 1GB file. Assuming the system has 2GB free memory left, and your program is bug free and we assume there is no memory overhead. When the data are processed in the pipeline, the second program died of OOM, bacause the first program hogs much memory in its pool. I encountered this several times. After some digging, I found STL/glibc has memory pool which, in some cases, never returns memory to operating system. That is why I am writing this article. 
 
 ## Theory
 
