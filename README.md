@@ -86,7 +86,7 @@ typedef __gnu_cxx::__pool_alloc<string> POOL;
 #define STL_CONTAINER vector<string, POOL>
 ```
 
-I replaced it with `list`, `deque` with and without the POOL allocator to get more test data.
+I replaced `vector` with `list`, `deque` with and without the POOL allocator to get more test data.
 
 In main function, I just called `test_stl_mem(k)` with k from 8 to 800, and recorded RSS memory usage after the call, which is called `out-of-scope RSS` in this test.
 
