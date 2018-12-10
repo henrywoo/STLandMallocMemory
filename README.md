@@ -162,7 +162,7 @@ All source code and test results are available here at [github's STLandMallocMem
 
 ## Q&A
 
-After publishing, I got some questions from several warmhearted friends and these are some hypothetical QA from our discussion:
+After publishing the article yesterday, I got some questions from several friends and these are some hypothetical QA from our discussion:
 
 Q1: In the test code, why pushing back to container repeatly instead of pre-allocating a big chunk of memory, by calling `vector<T>.reserve()`?  
 A1: Pre-allocating is the idea of memory pool. I am testing memory pool, instead of writing a new pool to test it. Also testing is to simulate the reality as much as possible, and makes it a little bit harder.
@@ -176,7 +176,7 @@ A2: Most operating systems and libraries allocate memory in blocks/pages which t
 (int) 4096
 [cling]$ 
 ```
-In addition growing and shrinking a process is an extremely expensive processes, whereas adding and removing memory from a free list is very cheap. Therefore, in cases where memory use swings wildly, it is better to spend the time and do the shrinking, but in cases where the memory use holds steadily, it is better to use the freelist and skip shrinking the process. The problem is that the memory allocator cannot know which situation it is facing, and therefore cannot perform this task optimally. Most malloc implementations do not shrink the process.
+In addition growing and shrinking a process is an extremely expensive processes, whereas adding and removing memory from a free list is very cheap. Therefore, in cases where memory use swings wildly, it is better to spend the time and do the shrinking, but in cases where the memory use holds steadily, it is better to use the freelist and skip shrinking the process. The problem is that the memory allocator cannot know which situation it is facing, and therefore cannot perform this task optimally. Most malloc implementations do not shrink the process. Once fragmentation happens, it is very hard to reclaim because memory is return by page, not by bytes. malloc is to deal with this problem. That is why there are so many malloc variants. 
 
 
 
