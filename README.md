@@ -160,6 +160,23 @@ Especially for data intensive application, before deploying to production, don't
 
 All source code and test results are available here at [github's STLandMallocMemory](https://github.com/henrywoo/STLandMallocMemory). You can get the latest update of this article from [here](https://github.com/henrywoo/STLandMallocMemory).
 
+## Q&A
+
+After publishing, I got some questions from several warmhearted friends and these are some hypothetical QA from our discussion:
+
+Q1: In the test code, why pushing back to container repeatly instead of pre-allocating a big chunk of memory, by calling `vector<T>.reserve()`?  
+A1: Pre-allocating is the idea of memory pool. I am testing memory pool, instead of writing a new pool to test it. Also testing is to simulate the reality as much as possible, and makes it a little bit harder.
+
+Q2: malloc/free is for virtual memory and virtual memory is allocated/deallocated by pages...  
+A2: Most operating systems and libraries allocate memory in blocks/pages which the library code requests from the OS. Then, when the memory is freed it is usually returned to a free list for the process (for reuse) since this is more efficient and the task of returning the memory to the OS is relatively expensive, especially if it would be requested again later. Sometimes the page will be returned if the allocation/deallocation is well behaved. However in general the heap for the process will become fragmented and since **only complete pages at the end of the address space can be returned to the OS**, the memory is often held by the process in its free list. There is function to get the page size, which is 4K in my machine:
+
+```
+[cling]$ #include <unistd.h>
+[cling]$ getpagesize()
+(int) 4096
+[cling]$ 
+```
+In addition growing and shrinking a process is an extremely expensive processes, whereas adding and removing memory from a free list is very cheap. Therefore, in cases where memory use swings wildly, it is better to spend the time and do the shrinking, but in cases where the memory use holds steadily, it is better to use the freelist and skip shrinking the process. The problem is that the memory allocator cannot know which situation it is facing, and therefore cannot perform this task optimally. Most malloc implementations do not shrink the process.
 
 
 
