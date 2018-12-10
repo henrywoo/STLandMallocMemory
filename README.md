@@ -160,9 +160,9 @@ Especially for data intensive application, before deploying to production, don't
 
 All source code and test results are available here at [github's STLandMallocMemory](https://github.com/henrywoo/STLandMallocMemory). You can get the latest update of this article from [here](https://github.com/henrywoo/STLandMallocMemory).
 
-## Q&A
+## Afterword
 
-After publishing the article yesterday, I got some questions from several friends and these are some hypothetical QA from our discussion:
+After publishing the article yesterday, I got some feedbacks and questions from several friends and these are some hypothetical QA from our discussion:
 
 Q1: In the test code, why pushing back to container repeatly instead of pre-allocating a big chunk of memory, by calling `vector<T>.reserve()`?  
 A1: Pre-allocating is the idea of memory pool. I am testing memory pool, instead of writing a new pool to test it. Also testing is to simulate the reality as much as possible, and makes it a little bit harder.
