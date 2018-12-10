@@ -1,6 +1,8 @@
 //
 // g++-7 stl_mem.cpp -O3 -o mememe -std=c++11 && ./mememe
 //
+// watch -n 1 'ps -eo ruser,pid,ppid,lwp,nlwp,psr,rss,sz,vsz,pmem,pcpu,s,args -L|grep -e "RUSE[R]" -e "memem[e]"'
+//
 #include <unistd.h> // _SC_PAGE_SIZE
 #include <cstdio>
 #include <vector>
