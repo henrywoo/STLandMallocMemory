@@ -158,7 +158,7 @@ Especially for data intensive application, before deploying to production, don't
 
 
 
-All source code and test results are available here at [github's STLandMallocMemory](https://github.com/henrywoo/STLandMallocMemory).
+All source code and test results are available here at [github's STLandMallocMemory](https://github.com/henrywoo/STLandMallocMemory). You can get the latest update of this article from [here](https://github.com/henrywoo/STLandMallocMemory).
 
 
 
